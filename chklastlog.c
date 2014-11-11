@@ -1,31 +1,5 @@
 /*
-   Copyright (c) DFN-CERT, Univ. of Hamburg 1994
-
-   Univ. Hamburg, Dept. of Computer Science
-   DFN-CERT
-   Vogt-Koelln-Strasse 30
-   22527 Hamburg
-   Germany
-
-   02/20/97 - Minimal changes for Linux/FreeBSD port.
-   02/25/97 - Another little bit change
-   12/26/98 - New Red Hat compatibility
-   Nelson Murilo, nelson@pangeia.com.br
-   01/05/00 - Performance patches
-   09/07/00 - Ports for Solaris
-   Andre Gustavo de Carvalho Albuquerque
-   12/15/00 - Add -f & -l options
-   Nelson Murilo, nelson@pangeia.com.br
-   01/09/01 - Many fixes
-   Nelson Murilo, nelson@pangeia.com.br
-   01/20/01 - More little fixes
-   Nelson Murilo, nelson@pangeia.com.br
-   24/01/01 - Segfault in some systems fixed, Thanks to Manfred Bartz
-   02/06/01 - Beter system detection & fix bug in OBSD, Thanks to Rudolf Leitgeb
-   09/19/01 - Another Segfault in some systems fixed, Thanks to Andreas Tirok
-   06/26/02 - Fix problem with maximum uid number - Thanks to Gerard van Wageningen
-   07/02/02 - Minor fixes - Nelson Murilo, nelson@pangeia.com.br
-   05/05/14 - Minor fixes - Klaus Steding-jessen 
+   chklastlog.c
 */
 
 
