@@ -1,5 +1,31 @@
 /*
-   chklastlog.c
+   Copyright (c) DFN-CERT, Univ. of Hamburg 1994
+
+   Univ. Hamburg, Dept. of Computer Science
+   DFN-CERT
+   Vogt-Koelln-Strasse 30
+   22527 Hamburg
+   Germany
+
+   02/20/97 - Minimal changes for Linux/FreeBSD port.
+   02/25/97 - Another little bit change
+   12/26/98 - New Red Hat compatibility
+   Nelson Murilo, nelson@pangeia.com.br
+   01/05/00 - Performance patches
+   09/07/00 - Ports for Solaris
+   Andre Gustavo de Carvalho Albuquerque
+   12/15/00 - Add -f & -l options
+   Nelson Murilo, nelson@pangeia.com.br
+   01/09/01 - Many fixes
+   Nelson Murilo, nelson@pangeia.com.br
+   01/20/01 - More little fixes
+   Nelson Murilo, nelson@pangeia.com.br
+   24/01/01 - Segfault in some systems fixed, Thanks to Manfred Bartz
+   02/06/01 - Beter system detection & fix bug in OBSD, Thanks to Rudolf Leitgeb
+   09/19/01 - Another Segfault in some systems fixed, Thanks to Andreas Tirok
+   06/26/02 - Fix problem with maximum uid number - Thanks to Gerard van Wageningen
+   07/02/02 - Minor fixes - Nelson Murilo, nelson@pangeia.com.br
+   05/05/14 - Minor fixes - Klaus Steding-jessen 
 */
 
 
@@ -16,7 +42,6 @@
 #include <sys/file.h>
 
 
-#define WTMP_FILENAME "/var/log/wtmp"
 #define LASTLOG_FILENAME "/var/log/lastlog"
 
 
@@ -60,27 +85,47 @@ int main(int argc, char*argv[]) {
 
         memcpy(wtmpfile, WTMP_FILENAME, 127);
         memcpy(lastlogfile, LASTLOG_FILENAME, 127);
-
+        if (argc > 5) {
+            printf("args too many!\nuse -h for a help\n");
+            exit(-1);
+        }
+        if (argc > 1) {
+            if (!memcmp("-h", *(argv + 1), 2) || !memcmp("--help", *(argv + 1), 6)) {
+                printf("chklastlog usage:\n");
+                printf("\t-h for a help of this\n");
+                printf("\t-f the file path of wtmp to use\n");
+                printf("\t-l the file path of lastlog to use\n");
+                exit(0);
+            }
+        }
         while (--argc && ++argv) /* poor man getopt */
         {
            if (!memcmp("-f", *argv, 2))
            {
               if (!--argc)
-                 break;
+                 goto wtmp;
               ++argv;
-              memcpy(wtmpfile, *argv, 127);
+              if (argv == NULL) {
+wtmp:             printf("-f need a args!\nuse -h for a help\n");
+                  exit(-1);
+              }else{
+                  memcpy(wtmpfile, *argv, 127); 
+              }
            }
            else if (!memcmp("-l", *argv, 2))
            {
               if (!--argc)
-                 break;
+                 goto lastlog;
               ++argv;
-              memcpy(lastlogfile, *argv, 127);
+              if (argv == NULL) {
+lastlog:          printf("-l need a args!\nuse -h for a help\n");
+                  exit(-1);
+              }else{
+                  memcpy(lastlogfile, *argv, 127); 
+              }
            }
         }
 
-	signal(SIGALRM, read_status);
-	alarm(5);
 	for (i=0; i<MAX_ID; i++)
 		userid[i]=FALSE;
 
