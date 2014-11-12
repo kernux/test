@@ -87,7 +87,7 @@ int main(int argc, char*argv[]) {
         memcpy(lastlogfile, LASTLOG_FILENAME, 127);
         if (argc > 5) {
             printf("args too many!\nuse -h for a help\n");
-            exit(-1);
+            return(-1);
         }
         if (argc > 1) {
             if (!memcmp("-h", *(argv + 1), 2) || !memcmp("--help", *(argv + 1), 6)) {
@@ -95,7 +95,7 @@ int main(int argc, char*argv[]) {
                 printf("\t-h for a help of this\n");
                 printf("\t-f the file path of wtmp to use\n");
                 printf("\t-l the file path of lastlog to use\n");
-                exit(0);
+                return(0);
             }
         }
         while (--argc && ++argv) /* poor man getopt */
@@ -107,7 +107,7 @@ int main(int argc, char*argv[]) {
               ++argv;
               if (argv == NULL) {
 wtmp:             printf("-f need a args!\nuse -h for a help\n");
-                  exit(-1);
+                  return(-1);
               }else{
                   memcpy(wtmpfile, *argv, 127); 
               }
@@ -119,7 +119,7 @@ wtmp:             printf("-f need a args!\nuse -h for a help\n");
               ++argv;
               if (argv == NULL) {
 lastlog:          printf("-l need a args!\nuse -h for a help\n");
-                  exit(-1);
+                  return(-1);
               }else{
                   memcpy(lastlogfile, *argv, 127); 
               }
@@ -150,49 +150,46 @@ lastlog:          printf("-l need a args!\nuse -h for a help\n");
 	localpwd = read_pwd();
 
 	while ((wtmp_bytes_read = read (fh_wtmp, &utmp_ent, sizeof (struct utmp))) >0) {
-            if (wtmp_bytes_read < sizeof(struct utmp))
-            {
-               fprintf(stderr, "wtmp entry may be corrupted");
-               break;
-            }
+        if (wtmp_bytes_read < sizeof(struct utmp))
+        {
+           fprintf(stderr, "wtmp entry may be corrupted");
+           break;
+        }
 	    total_wtmp_bytes_read+=wtmp_bytes_read;
 	    if ( !nonuser(utmp_ent) && strncmp(utmp_ent.ut_line, "ftp", 3) &&
 		 (uid=localgetpwnam(localpwd,utmp_ent.ut_name)) != NULL )
+        {
+            if (*uid > MAX_ID)
             {
-                if (*uid > MAX_ID)
+               fprintf(stderr, "MAX_ID is %ld and current uid is %ld, please check\n\r", MAX_ID, *uid );
+               return (1);
+            }
+    		if (!userid[*uid])
+            {
+    		    lseek(fh_lastlog, (long)*uid * sizeof (struct lastlog), 0);
+    		    if ((wtmp_bytes_read = read(fh_lastlog, &lastlog_ent, sizeof (struct lastlog))) > 0)
                 {
-                   fprintf(stderr, "MAX_ID is %ld and current uid is %ld, please check\n\r", MAX_ID, *uid );
-                   exit (1);
-
-                }
-		if (!userid[*uid])
-                {
-		    lseek(fh_lastlog, (long)*uid * sizeof (struct lastlog), 0);
-		    if ((wtmp_bytes_read = read(fh_lastlog, &lastlog_ent, sizeof (struct lastlog))) > 0)
+                    if (wtmp_bytes_read < sizeof(struct lastlog))
                     {
-                        if (wtmp_bytes_read < sizeof(struct lastlog))
-                        {
-                           fprintf(stderr, "lastlog entry may be corrupted");
-                           break;
-                        }
-                        if (lastlog_ent.ll_time == 0)
-                        {
-                           if (-1 != (slot = getslot(localpwd, *uid)))
-                               printf("user %s deleted or never logged from lastlog!\n",
-                                NULL != localpwd->uname[slot] ?
-                                (char*)localpwd->uname[slot] : "(null)");
-                           else
-                              printf("deleted user uid(%d) not in passwd\n", *uid);
-                           ++status;
-                        }
-                        userid[*uid]=TRUE;
+                       fprintf(stderr, "lastlog entry may be corrupted\n");
+                       break;
                     }
-		}
-           }
+                    if (lastlog_ent.ll_time == 0)
+                    {
+                       if (-1 != (slot = getslot(localpwd, *uid)))
+                           printf("user %s deleted or never logged from lastlog!\n",
+                            NULL != localpwd->uname[slot] ?
+                            (char*)localpwd->uname[slot] : "(null)");
+                       else
+                          printf("deleted user uid(%d) not in passwd\n", *uid);
+                       ++status;
+                    }
+                    userid[*uid]=TRUE;
+                }
+    		}
+        }
 	}
-#if 0
-	printf("\n");
-#endif
+
 	free_results(localpwd);
 	close(fh_wtmp);
 	close(fh_lastlog);
@@ -207,6 +204,7 @@ int nonuser(struct utmp utmp_ent)
 }
 #endif
 
+/*the process of detection*/
 void read_status() {
    double remaining_time;
    static long last_total_bytes_read=0;
@@ -225,13 +223,14 @@ void read_status() {
 */
 }
 
+/*Get the user information from /etc/passwd file with getpwent function*/
 struct s_localpwd *read_pwd() {
    struct passwd *pwdent;
    int numentries=0,i=0;
    struct s_localpwd *localpwd;
 
    setpwent();
-   while ((pwdent = getpwent())) {
+   while (getpwent()) {
 	numentries++;
    }
    endpwent();
@@ -253,6 +252,7 @@ struct s_localpwd *read_pwd() {
    return(localpwd);
 }
 
+/*clear the malloc mems*/
 void free_results(struct s_localpwd *localpwd) {
    int i;
    free(localpwd->uid);
@@ -263,19 +263,21 @@ void free_results(struct s_localpwd *localpwd) {
    free(localpwd);
 }
 
+/*get the uid by username*/
 uid_t *localgetpwnam(struct s_localpwd *localpwd, char *username) {
    int i;
    size_t len;
 
    for (i=0; i<(localpwd->numentries);i++) {
-      len = (strlen(username)>29)?30:strlen(username)+1;
+      len = (strlen(username)>29)?29:strlen(username)+1;
       if (!memcmp(username,localpwd->uname[i],len)) {
-	return &(localpwd->uid[i]);
+          return &(localpwd->uid[i]);
       }
    }
    return NULL;
 }
 
+/*get the pos in the /etc/passwd by uid*/
 int getslot(struct s_localpwd *localpwd, uid_t uid)
 {
         int i;
