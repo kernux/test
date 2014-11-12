@@ -28,6 +28,15 @@
    05/05/14 - Minor fixes - Klaus Steding-jessen 
 */
 
+/* 
+chklastlog.c 
+11/12/14 - Minor fixes - kernux
+read username from wtmp file and find against uid in passwd file, then   
+use uid to search record in the lastlog file. The lastlog file is a sparse file, 
+which size is the max-uid*(struct lastlog) in the passwd file, so the uid is the index, 
+not the real pos in the passwd file. 
+*/
+
 
 #include <stdio.h>
 #include <stdlib.h>
