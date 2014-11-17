@@ -196,8 +196,7 @@ int main(int argc, char *argv[]) {
         }
         if (!mtch_fnd) {
             if (!hdr_prntd) {
-                printf
-                    (" The tty of the following user process(es) were not found\n");
+                printf(" The tty of the following user process(es) were not found\n");
                 printf(" in %s !\n", UTMP);
                 printf("! %-9s %7s %-6s %s\n", "RUID", "PID", "TTY",
                        "CMD");
