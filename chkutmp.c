@@ -145,7 +145,7 @@ int fetchutmp(struct utmp_line *utl_p) {
 
 int get_utmp_path()
 {
-    char cmd[] = {"locate utmp | grep /utmp¥"};
+    char cmd[] = {"locate utmp | grep /utmp$"};
     char lines[1024] = {0};
     int i = 0;
     FILE *fp = popen(cmd, "r");
