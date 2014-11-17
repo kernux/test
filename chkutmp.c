@@ -166,11 +166,9 @@ int get_utmp_path()
 }
 
 int main(int argc, char *argv[]) {
-    if (3 == argc) {
-        if (!memcmp(*(argv+1), "-f", 2) && strlen(*(argv+2)) < 1024) {
+    if (argc == 3 && !memcmp("-f", argv[1], 2) && *argv[2]){
             memset(UTMP, 0, sizeof(UTMP));
-            memcpy(UTMP, *(argv+2), strlen(*(argv+2)));
-        }
+            memcpy(UTMP, argv[2], strlen(argv[2]));
     }else{
         get_utmp_path();
     }
