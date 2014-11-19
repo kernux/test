@@ -207,6 +207,18 @@ chkutmp() {
 
 }
 
+chkdirs() {
+    if [ ! -x ./chkdirs ]; then
+      echo "not tested: can't exec ./chkdirs"
+      return ${NOT_TESTED}
+    fi
+    if ./chkdirs /
+    then
+      if [ "${QUIET}" != "t" ]; then echo "chkdirs: nothings detected"; fi
+    fi
+
+}
+
 z2 () {
     if [ ! -x ./chklastlog ]; then
       echo "not tested: can't exec ./chklastlog"
