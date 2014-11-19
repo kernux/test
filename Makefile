@@ -3,19 +3,19 @@
 # (C) 1997-2007 Nelson Murilo, Pangeia Informatica, AMS Foundation and others.
 #
 
-CC       = cc
-CFLAGS	 = -DHAVE_LASTLOG_H
-STATIC   = -static
+CC       = gcc
+LDFLAGS  = -static
+CFLAGS	 = -O2 -Wall
 
-SRCS   = chklastlog.c chkwtmp.c ifpromisc.c chkproc.c chkdirs.c check_wtmpx.c strings.c
+SRCS   = chklastlog.c chkwtmp.c ifpromisc.c chkproc.c chkdirs.c strings.c
 
-OBJS   = chklastlog.o chkwtmp.o ifpromisc.o chkproc.o chkdirs.o check_wtmpx.o strings-static.o
+OBJS   = chklastlog.o chkwtmp.o ifpromisc.o chkproc.o chkdirs.o strings-static.o
 
 all:
 	@echo '*** stopping make sense ***'
 	@exec make sense
 
-sense: chklastlog chkwtmp ifpromisc chkproc chkdirs check_wtmpx strings-static chkutmp
+sense: chklastlog chkwtmp ifpromisc chkproc chkdirs strings-static chkutmp
 
 chklastlog:   chklastlog.c
 	${CC} ${CFLAGS} -o $@ chklastlog.c
@@ -47,7 +47,7 @@ chkutmp:   chkutmp.c
 
 
 strings-static:   strings.c
-	${CC} ${STATIC} ${LDFLAGS} -o $@ strings.c
+	${CC} ${LDFLAGS} -o $@ strings.c
 	@strip $@
 
 clean:
