@@ -51,4 +51,4 @@ strings-static:   strings.c
 	@strip $@
 
 clean:
-	rm -f ${OBJS} core chklastlog chkwtmp ifpromisc chkproc chkdirs check_wtmpx strings-static chkutmp
+	rm -f ${OBJS} core chklastlog chkwtmp ifpromisc chkproc chkdirs strings-static chkutmp
