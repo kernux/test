@@ -161,7 +161,7 @@ lastlog:          printf("-l need a args!\nuse -h for a help\n");
 	while ((wtmp_bytes_read = read (fh_wtmp, &utmp_ent, sizeof (struct utmp))) >0) {
         if (wtmp_bytes_read < sizeof(struct utmp))
         {
-           fprintf(stderr, "wtmp entry may be corrupted");
+           fprintf(stderr, "wtmp entry may be corrupted\n");
            break;
         }
 	    total_wtmp_bytes_read+=wtmp_bytes_read;
