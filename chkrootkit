@@ -32,7 +32,7 @@ pop2 pop3 ps pstree rpcinfo rlogind rshd slogin sendmail sshd syslogd tar tcpd \
 tcpdump top telnetd timed traceroute vdir w write"
 
 # Tools
-TOOLS="aliens asp bindshell lkm rexedcs sniffer w55808 wted scalper slapper z2 chkutmp OSX_RSPLUG"
+TOOLS="aliens asp bindshell lkm rexedcs sniffer w55808 wted scalper slapper z2 chkutmp chkdirs OSX_RSPLUG"
 
 # Return Codes
 INFECTED=0
