@@ -9,6 +9,7 @@ CHKROOTKIT_VERSION='0.50'
 #
 # (c)1997-2014 Nelson Murilo, Pangeia Informatica, AMS Foundation and others.
 # All rights reserved
+# change chkdirs root dir to / by kernux	2014/11/20
 
 ### workaround for some Bourne shell implementations
 unalias login > /dev/null 2>&1
